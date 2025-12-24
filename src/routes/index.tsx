@@ -69,15 +69,16 @@ function App() {
       } else {
         const ai = new GoogleGenAI({ apiKey });
 
+        // Define prompt context first
         let promptContext = `Write a short, personalized Christmas greeting (max 3 sentences) from Francis (Kaiko) to ${name}, who is his ${effectiveRelation}. `
 
         if (isGirlfriend) {
           promptContext += `This is for his Girlfriend/Special Someone. The message MUST be deeply romantic, sweet, and special. Express how she is the best gift he received. Make her feel loved and cherished.`
-        } else if (relation === 'Parents') {
-          promptContext += `This is for his mom or dad (Mommy Ann or Daddy Marlon). The message MUST be deeply heartwarming, sincere, and sentimental. Express immense gratitude for their love, sacrifices, and support. Make it feel very special and loving.`
-        } else if (['Barkada', 'Best Friend'].includes(relation)) {
+        } else if (effectiveRelation === 'Parents') {
+          promptContext += `This is for his mom or dad (Mommy Ann or Daddy Marlon). The message MUST be deeply heartwarming, sincere, sincere, and sentimental. Express immense gratitude for their love, sacrifices, and support. Make it feel very special and loving.`
+        } else if (['Barkada', 'Best Friend'].includes(effectiveRelation)) {
           promptContext += `Tone should be fun, casual, and maybe a little funny or "kanal" humor if appropriate for close friends. Make it sound like a real Filipino close friend greeting.`
-        } else if (relation === 'Crush') {
+        } else if (effectiveRelation === 'Crush') {
           promptContext += `Tone should be sweet, cute, and slightly flirty but respectful. Make it memorable.`
         } else {
           promptContext += `Tone should be warm, festive, and appropriate for the relationship (e.g., polite for acquaintances, friendly for family).`
@@ -85,11 +86,22 @@ function App() {
 
         promptContext += ` Do NOT mention coding, programming, or technology. Focus purely on the holiday spirit, love, and connection.`
 
-        const response = await ai.models.generateContent({
-          model: "gemini-2.5-flash",
-          contents: promptContext,
-        });
-        generatedMessage = response.text || "Merry Christmas! (AI decided to take a holiday break, but Francis sends his regards!)"
+        try {
+          // Attempt AI Generation
+          const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash-lite",
+            contents: promptContext,
+          });
+          generatedMessage = response.text || "Merry Christmas! (AI decided to take a holiday break, but Francis sends his regards!)"
+        } catch (apiError) {
+          console.warn("Gemini API Error (likely quota), falling back to template:", apiError)
+          // Fallback Logic
+          if (isGirlfriend) {
+            generatedMessage = `Merry Christmas, my love ${name}! You are the best gift I could ever ask for. I love you so much! ❤️`
+          } else {
+            generatedMessage = `Merry Christmas, ${name}! I'm so grateful to have you as my ${effectiveRelation}. May your holidays be filled with joy, laughter, and wonderful memories! 🎄`
+          }
+        }
 
         // Save to Supabase (Non-blocking)
         try {
