@@ -15,6 +15,12 @@ function App() {
   const [name, setName] = useState("")
   const [relation, setRelation] = useState("")
 
+  // Date Check Logic
+  const currentDate = new Date()
+  // Month is 0-indexed (11 is December). So this is Jan 1, 2026.
+  const cutoffDate = new Date(2026, 0, 1)
+  const isExpired = currentDate >= cutoffDate
+
   const loadingMessages = [
     "Connecting to Neural Net...",
     "Parsing Relationship Context...",
@@ -173,61 +179,74 @@ function App() {
               I automated my Christmas greetings to save time. Enter your details to compile your message.
             </p>
 
-            <form className="space-y-5" onSubmit={handleGenerate}>
-              <div className="space-y-1.5 text-left">
-                <label htmlFor="name" className="text-sm font-semibold text-gray-700 ml-1">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  required
-                  placeholder="e.g. Juan dela Cruz"
-                  value={name}
-                  onChange={handleNameChange}
-                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-(--christmas-red) focus:ring-4 focus:ring-(--christmas-red)/5 transition-all outline-none placeholder:text-gray-400 text-gray-900 text-sm"
-                />
-              </div>
-
-              <div className="space-y-1.5 text-left">
-                <label htmlFor="relation" className="text-sm font-semibold text-gray-700 ml-1">
-                  How do you know Francis?
-                </label>
-                <div className="relative">
-                  <select
-                    id="relation"
-                    name="relation"
-                    required
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-(--christmas-red) focus:ring-4 focus:ring-(--christmas-red)/5 transition-all outline-none appearance-none text-gray-900 text-sm cursor-pointer"
-                    value={relation}
-                    onChange={(e) => setRelation(e.target.value)}
-                  >
-                    <option value="" disabled>Select your relationship</option>
-                    <option value="Special Someone">Special Someone ❤️</option>
-                    <option value="Parents">Parents</option>
-                    <option value="Family">Family</option>
-                    <option value="Best Friend">Best Friend</option>
-                    <option value="Barkada">Barkada</option>
-                    <option value="Classmate">Classmate</option>
-                    <option value="Crush">Crush</option>
-                    <option value="Acquaintance">Acquaintance</option>
-                    <option value="Stranger">Stranger 😂</option>
-                  </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                  </div>
+            {isExpired ? (
+              <div className="flex flex-col items-center justify-center space-y-4 animate-in fade-in duration-500 py-8">
+                <div className="text-6xl mb-2">👋🎄</div>
+                <h2 className="text-2xl font-bold text-gray-800 font-['Outfit'] text-center">See you next Christmas!</h2>
+                <p className="text-gray-600 text-center max-w-xs">
+                  The holiday season has officially ended. I hope you had a wonderful Christmas and New Year!
+                </p>
+                <div className="p-4 bg-red-50 text-red-800 rounded-xl text-sm border border-red-100 mt-4">
+                  Missed your greeting? Message Francis directly! 📨
                 </div>
               </div>
+            ) : (
+              <form className="space-y-5" onSubmit={handleGenerate}>
+                <div className="space-y-1.5 text-left">
+                  <label htmlFor="name" className="text-sm font-semibold text-gray-700 ml-1">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    required
+                    placeholder="e.g. Juan dela Cruz"
+                    value={name}
+                    onChange={handleNameChange}
+                    className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-(--christmas-red) focus:ring-4 focus:ring-(--christmas-red)/5 transition-all outline-none placeholder:text-gray-400 text-gray-900 text-sm"
+                  />
+                </div>
 
-              <button
-                type="submit"
-                className="w-full py-3.5 mt-2 bg-linear-to-r from-(--christmas-red) to-red-600 text-white font-semibold text-lg rounded-xl shadow-lg shadow-red-500/20 hover:shadow-red-500/40 hover:-translate-y-px active:translate-y-px transition-all duration-200 flex items-center justify-center gap-2 group"
-              >
-                <span>Generate Greeting</span>
-                <span className="group-hover:rotate-12 transition-transform text-xl">🎁</span>
-              </button>
-            </form>
+                <div className="space-y-1.5 text-left">
+                  <label htmlFor="relation" className="text-sm font-semibold text-gray-700 ml-1">
+                    How do you know Francis?
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="relation"
+                      name="relation"
+                      required
+                      className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-(--christmas-red) focus:ring-4 focus:ring-(--christmas-red)/5 transition-all outline-none appearance-none text-gray-900 text-sm cursor-pointer"
+                      value={relation}
+                      onChange={(e) => setRelation(e.target.value)}
+                    >
+                      <option value="" disabled>Select your relationship</option>
+                      <option value="Special Someone">Special Someone ❤️</option>
+                      <option value="Parents">Parents</option>
+                      <option value="Family">Family</option>
+                      <option value="Best Friend">Best Friend</option>
+                      <option value="Barkada">Barkada</option>
+                      <option value="Classmate">Classmate</option>
+                      <option value="Crush">Crush</option>
+                      <option value="Acquaintance">Acquaintance</option>
+                      <option value="Stranger">Stranger 😂</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3.5 mt-2 bg-linear-to-r from-(--christmas-red) to-red-600 text-white font-semibold text-lg rounded-xl shadow-lg shadow-red-500/20 hover:shadow-red-500/40 hover:-translate-y-px active:translate-y-px transition-all duration-200 flex items-center justify-center gap-2 group"
+                >
+                  <span>Generate Greeting</span>
+                  <span className="group-hover:rotate-12 transition-transform text-xl">🎁</span>
+                </button>
+              </form>
+            )}
           </>
         )}
       </div>
